@@ -254,7 +254,7 @@ export function ThreeDViewer({ src, fileName }: ThreeDViewerProps) {
 				<gridHelper args={[10, 10, "#444444", "#222222"]} />
 				<axesHelper args={[5]} />
 			</Canvas>
-			<div className="absolute bottom-4 left-4 bg-black/60 text-white text-xs px-3 py-2 rounded-lg">
+			<div className="absolute bottom-4 left-4 glass text-white text-xs px-3 py-2 rounded-lg border border-white/10 shadow-lg">
 				<p>🖱️ Left click + drag: Rotate</p>
 				<p>🖱️ Right click + drag: Pan</p>
 				<p>🖱️ Scroll: Zoom</p>

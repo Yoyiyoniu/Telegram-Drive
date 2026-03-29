@@ -1,70 +1,38 @@
-import { createContext, useContext, useState, ReactNode, useLayoutEffect } from 'react';
-
-type Theme = 'light' | 'dark';
+import { createContext, useContext, ReactNode, useLayoutEffect } from "react";
 
 interface ThemeContextType {
-    theme: Theme;
-    toggleTheme: () => void;
-    setTheme: (theme: Theme) => void;
+	theme: "dark";
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-// Get initial theme synchronously to prevent flash
-function getInitialTheme(): Theme {
-    if (typeof window !== 'undefined') {
-        const saved = localStorage.getItem('theme') as Theme;
-        if (saved === 'light' || saved === 'dark') return saved;
-        if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-            return 'light';
-        }
-    }
-    return 'dark';
+// Apply dark theme to DOM immediately
+function applyDarkTheme() {
+	const root = document.documentElement;
+	root.classList.add("dark");
+	root.classList.remove("light");
 }
 
-// Apply theme to DOM immediately
-function applyTheme(theme: Theme) {
-    const root = document.documentElement;
-    if (theme === 'light') {
-        root.classList.add('light');
-        root.classList.remove('dark');
-    } else {
-        root.classList.add('dark');
-        root.classList.remove('light');
-    }
-}
-
-// Apply theme immediately on script load (before React hydration)
-if (typeof window !== 'undefined') {
-    applyTheme(getInitialTheme());
+// Apply theme immediately on script load
+if (typeof window !== "undefined") {
+	applyDarkTheme();
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-    const [theme, setThemeState] = useState<Theme>(getInitialTheme);
+	// Ensure dark theme is always applied
+	useLayoutEffect(() => {
+		applyDarkTheme();
+	}, []);
 
-    // Use useLayoutEffect to apply theme synchronously before paint
-    useLayoutEffect(() => {
-        applyTheme(theme);
-        localStorage.setItem('theme', theme);
-    }, [theme]);
-
-    const toggleTheme = () => {
-        setThemeState(t => t === 'dark' ? 'light' : 'dark');
-    };
-
-    const setTheme = (newTheme: Theme) => {
-        setThemeState(newTheme);
-    };
-
-    return (
-        <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
-            {children}
-        </ThemeContext.Provider>
-    );
+	return (
+		<ThemeContext.Provider value={{ theme: "dark" }}>
+			{children}
+		</ThemeContext.Provider>
+	);
 }
 
 export const useTheme = () => {
-    const context = useContext(ThemeContext);
-    if (!context) throw new Error('useTheme must be used within a ThemeProvider');
-    return context;
+	const context = useContext(ThemeContext);
+	if (!context) throw new Error("useTheme must be used within a ThemeProvider");
+	return context;
 };

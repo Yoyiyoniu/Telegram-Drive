@@ -222,7 +222,7 @@ export function PreviewModal({
 
 	return (
 		<div
-			className="fixed inset-0 z-[150] bg-black/90 flex items-center justify-center p-4 backdrop-blur-sm"
+			className="fixed inset-0 z-[150] bg-black/90 flex items-center justify-center p-4 backdrop-blur-md"
 			onClick={onClose}
 		>
 			<div
@@ -230,27 +230,27 @@ export function PreviewModal({
 				onClick={(e) => e.stopPropagation()}
 			>
 				<button
+					type="button"
 					onClick={onPrev}
-					className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-black/60 hover:bg-black/80 rounded-full transition-colors"
-					style={{ color: "#ffffff" }}
+					className="absolute left-2 top-1/2 -translate-y-1/2 p-3 glass hover:bg-white/10 rounded-full transition-all hover:scale-110 text-white"
 					title="Previous (ArrowLeft / J)"
 				>
 					<ChevronLeft className="w-6 h-6" />
 				</button>
 
 				<button
+					type="button"
 					onClick={onNext}
-					className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-black/60 hover:bg-black/80 rounded-full transition-colors"
-					style={{ color: "#ffffff" }}
+					className="absolute right-2 top-1/2 -translate-y-1/2 p-3 glass hover:bg-white/10 rounded-full transition-all hover:scale-110 text-white"
 					title="Next (ArrowRight / L)"
 				>
 					<ChevronRight className="w-6 h-6" />
 				</button>
 
 				<button
+					type="button"
 					onClick={onClose}
-					className="absolute -top-12 right-0 p-2 bg-black/60 hover:bg-black/80 rounded-full transition-colors"
-					style={{ color: "#ffffff" }}
+					className="absolute -top-12 right-0 p-3 glass hover:bg-white/10 rounded-full transition-all hover:scale-110 text-white"
 				>
 					<X className="w-6 h-6" />
 				</button>
@@ -313,7 +313,7 @@ export function PreviewModal({
 								className="max-w-full max-h-[85vh] rounded-lg shadow-2xl bg-black"
 							/>
 						) : (
-							<div className="bg-[#1c1c1c] p-8 rounded-xl text-center border border-white/10 shadow-2xl">
+							<div className="glass-card p-8 rounded-xl text-center shadow-2xl">
 								<File className="w-16 h-16 text-telegram-primary mx-auto mb-4" />
 								<h3 className="text-xl text-white font-medium mb-2">
 									{file.name}
