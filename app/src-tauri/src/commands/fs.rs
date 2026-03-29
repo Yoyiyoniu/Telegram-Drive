@@ -423,3 +423,9 @@ pub async fn cmd_scan_folders(
     log::info!("Scan complete. Found {} folders.", folders.len());
     Ok(folders)
 }
+
+#[tauri::command]
+pub async fn cmd_read_file_bytes(path: String) -> Result<Vec<u8>, String> {
+    log::info!("Reading file bytes: {}", path);
+    std::fs::read(&path).map_err(|e| format!("Failed to read file: {}", e))
+}

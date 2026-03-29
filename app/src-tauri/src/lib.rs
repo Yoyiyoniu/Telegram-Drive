@@ -83,6 +83,7 @@ pub fn run() {
             commands::cmd_clean_cache,
             commands::cmd_get_thumbnail,
             commands::cmd_get_stream_token,
+            commands::cmd_read_file_bytes,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
