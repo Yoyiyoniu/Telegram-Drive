@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
+import { invoke } from "@tauri-apps/api/core";
 import { Canvas, useThree } from "@react-three/fiber";
 import * as THREE from "three";
-import { STLLoader } from "three/examples/jsm/loaders/STLLoader.js";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { PLYLoader } from "three/examples/jsm/loaders/PLYLoader.js";
-import { invoke } from "@tauri-apps/api/core";
+import { STLLoader } from "three/examples/jsm/loaders/STLLoader.js";
+import { ThreeMFLoader } from "three/examples/jsm/loaders/3MFLoader.js";
 
 interface ThreeDViewerProps {
 	src: string;
@@ -14,12 +15,16 @@ interface ThreeDViewerProps {
 }
 
 function Model({ object }: { object: THREE.Object3D | THREE.BufferGeometry }) {
-	const meshRef = useRef<THREE.Group>(null);
+	const groupRef = useRef<THREE.Group>(null);
 
 	useEffect(() => {
-		if (!meshRef.current) return;
+		if (!groupRef.current) return;
 
-		meshRef.current.clear();
+		groupRef.current.clear();
+
+		// Create rotation container (for Z-up to Y-up conversion)
+		const rotationGroup = new THREE.Group();
+		rotationGroup.rotation.x = -Math.PI / 2; // -90 degrees
 
 		if (object instanceof THREE.BufferGeometry) {
 			object.computeVertexNormals();
@@ -33,7 +38,7 @@ function Model({ object }: { object: THREE.Object3D | THREE.BufferGeometry }) {
 					roughness: 0.4,
 				}),
 			);
-			meshRef.current.add(mesh);
+			rotationGroup.add(mesh);
 		} else {
 			object.traverse((child) => {
 				if (child instanceof THREE.Mesh) {
@@ -46,24 +51,21 @@ function Model({ object }: { object: THREE.Object3D | THREE.BufferGeometry }) {
 					});
 				}
 			});
-			meshRef.current.add(object);
+			rotationGroup.add(object);
 		}
 
-		// Center and scale the model
-		const box = new THREE.Box3().setFromObject(meshRef.current);
-		const center = box.getCenter(new THREE.Vector3());
+		groupRef.current.add(rotationGroup);
+
+		// Calculate bounds for scaling only
+		const box = new THREE.Box3().setFromObject(groupRef.current);
 		const size = box.getSize(new THREE.Vector3());
 		const maxDim = Math.max(size.x, size.y, size.z);
 		const scale = 2 / maxDim;
 
-		meshRef.current.position.set(
-			-center.x * scale,
-			-center.y * scale,
-			-center.z * scale,
-		);
-		meshRef.current.scale.setScalar(scale);
+		// Only scale, don't center
+		groupRef.current.scale.setScalar(scale);
 
-		console.log("📐 Model bounds:", { center, size, maxDim, scale });
+		console.log("📐 Model size:", { size, maxDim, scale });
 	}, [object]);
 
 	return (
@@ -72,7 +74,7 @@ function Model({ object }: { object: THREE.Object3D | THREE.BufferGeometry }) {
 			<directionalLight position={[5, 5, 5]} intensity={0.8} castShadow />
 			<directionalLight position={[-5, -5, -5]} intensity={0.4} />
 			<pointLight position={[0, 5, 0]} intensity={0.3} />
-			<group ref={meshRef} />
+			<group ref={groupRef} />
 		</>
 	);
 }
@@ -185,7 +187,11 @@ export function ThreeDViewer({ src, fileName }: ThreeDViewerProps) {
 					console.log("✅ PLY parsed successfully");
 					setObject(geo);
 				} else if (fileExt === "3mf") {
-					setError("3MF format requires additional loader - coming soon");
+					console.log("🔵 Parsing 3MF file...");
+					const loader = new ThreeMFLoader();
+					const group = loader.parse(arrayBuffer);
+					console.log("✅ 3MF parsed successfully");
+					setObject(group);
 				} else {
 					setError(`Format .${fileExt} not yet supported`);
 				}
