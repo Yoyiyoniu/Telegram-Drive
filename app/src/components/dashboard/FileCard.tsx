@@ -104,13 +104,14 @@ export function FileCard({
 			<motion.div
 				layout
 				draggable={!isFolder}
-				onDragStart={(e: React.DragEvent) => {
+				onDragStart={(e) => {
+					const dragEvent = e as unknown as React.DragEvent;
 					if (onDragStart) onDragStart(file.id);
-					e.dataTransfer.setData(
+					dragEvent.dataTransfer.setData(
 						"application/x-telegram-file-id",
 						file.id.toString(),
 					);
-					e.dataTransfer.effectAllowed = "move";
+					dragEvent.dataTransfer.effectAllowed = "move";
 				}}
 				onDragEnd={() => {
 					if (onDragEnd) onDragEnd();

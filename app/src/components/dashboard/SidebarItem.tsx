@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 
 interface SidebarItemProps {
-	icon: React.ElementType;
+	icon: React.ComponentType<{ className?: string }>;
 	label: string;
 	active: boolean;
 	onClick: () => void;
@@ -29,6 +29,7 @@ export function SidebarItem({
 
 	return (
 		<button
+			type="button"
 			onClick={onClick}
 			onDragEnter={(e) => {
 				e.preventDefault();

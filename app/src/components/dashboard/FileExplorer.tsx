@@ -75,7 +75,6 @@ export function FileExplorer({
 	onDownload,
 	onPreview,
 	onManualUpload,
-	onSelectionClear,
 	onDrop,
 	onDragStart,
 	onDragEnd,
