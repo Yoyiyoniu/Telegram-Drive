@@ -7,7 +7,10 @@
 		"dev": "vite",
 		"build": "tsc && vite build",
 		"preview": "vite preview",
-		"tauri": "tauri"
+		"tauri": "tauri",
+		"build:windows": "PATH=\"$HOME/.cargo/bin:$PATH\" bun tauri build --runner cargo-xwin --target x86_64-pc-windows-msvc",
+		"build:linux": "./scripts/build-linux.sh",
+		"build:all": "./build-and-check.sh"
 	},
 	"dependencies": {
 		"@react-three/fiber": "^9.5.0",
