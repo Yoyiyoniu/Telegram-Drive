@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
+import { Modal, Button } from "@heroui/react";
 
 interface ConfirmOptions {
 	title: string;
@@ -45,35 +46,40 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
 	return (
 		<ConfirmContext.Provider value={{ confirm }}>
 			{children}
-			{isOpen && (
-				<div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-md">
-					<div
-						className="glass-card rounded-xl p-6 w-96 shadow-2xl animate-in zoom-in-95"
-						onClick={(e) => e.stopPropagation()}
-					>
-						<h3 className="text-lg font-medium text-white mb-2">
-							{options.title}
-						</h3>
-						<p className="text-telegram-subtext text-sm mb-6 whitespace-pre-line">
-							{options.message}
-						</p>
-						<div className="flex justify-end gap-3">
-							<button
-								onClick={handleCancel}
-								className="px-4 py-2 rounded-lg text-sm font-medium hover:bg-white/5 text-telegram-subtext transition"
-							>
-								{options.cancelText || "Cancel"}
-							</button>
-							<button
-								onClick={handleConfirm}
-								className={`px-4 py-2 rounded-lg text-sm font-medium transition ${options.variant === "danger" ? "bg-red-500/10 text-red-400 hover:bg-red-500/20" : "bg-telegram-primary text-white hover:bg-telegram-primary/90"}`}
-							>
-								{options.confirmText || "Confirm"}
-							</button>
-						</div>
-					</div>
-				</div>
-			)}
+			<Modal isOpen={isOpen} onOpenChange={setIsOpen}>
+				<Modal.Backdrop variant="blur">
+					<Modal.Container>
+						<Modal.Dialog>
+							<Modal.Header>
+								<Modal.Heading className="text-lg font-medium text-white">
+									{options.title}
+								</Modal.Heading>
+							</Modal.Header>
+							<Modal.Body>
+								<p className="text-telegram-subtext text-sm whitespace-pre-line">
+									{options.message}
+								</p>
+							</Modal.Body>
+							<Modal.Footer className="flex justify-end gap-3">
+								<Button
+									variant="ghost"
+									onClick={handleCancel}
+									className="px-4 py-2 text-sm font-medium text-telegram-subtext"
+								>
+									{options.cancelText || "Cancel"}
+								</Button>
+								<Button
+									variant={options.variant === "danger" ? "danger" : "primary"}
+									onClick={handleConfirm}
+									className="px-4 py-2 text-sm font-medium"
+								>
+									{options.confirmText || "Confirm"}
+								</Button>
+							</Modal.Footer>
+						</Modal.Dialog>
+					</Modal.Container>
+				</Modal.Backdrop>
+			</Modal>
 		</ConfirmContext.Provider>
 	);
 }

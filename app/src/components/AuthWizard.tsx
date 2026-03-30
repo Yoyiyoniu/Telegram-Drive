@@ -13,6 +13,15 @@ import {
 	X,
 } from "lucide-react";
 import { load } from "@tauri-apps/plugin-store";
+import {
+	Button,
+	Card,
+	TextField,
+	Label,
+	Input,
+	Modal,
+	Spinner,
+} from "@heroui/react";
 
 type Step = "setup" | "phone" | "code" | "password";
 
@@ -34,10 +43,10 @@ export function AuthWizard({ onLogin }: { onLogin: () => void }) {
 					application cannot function here because it requires access to the
 					system backend (Rust).
 				</p>
-				<div className="p-4 glass rounded-xl text-sm text-gray-300">
+				<Card className="p-4 text-sm text-gray-300">
 					Please open the <strong>Penguin Drive</strong> window in your OS
 					taskbar/dock to continue.
-				</div>
+				</Card>
 			</div>
 		);
 	}
@@ -215,318 +224,329 @@ export function AuthWizard({ onLogin }: { onLogin: () => void }) {
 			<motion.div
 				initial={{ opacity: 0, scale: 0.95, y: 20 }}
 				animate={{ opacity: 1, scale: 1, y: 0 }}
-				className="glass-card p-8 rounded-3xl shadow-2xl w-full max-w-md relative z-10"
+				className="relative z-10"
 			>
-				<div className="text-center mb-8">
-					<div className="w-20 h-20 mb-6 mx-auto flex items-center justify-center filter drop-shadow-lg">
-						<img src="/logo.svg" alt="Logo" className="w-full h-full" />
-					</div>
-					<h1 className="text-2xl font-bold text-white mb-1 tracking-tight">
-						Penguin Drive
-					</h1>
-					<p className="text-sm text-white/60 font-medium">
-						Self-Hosted Secure Storage
-					</p>
-				</div>
+				<Card className="p-8 w-full max-w-md backdrop-blur-md bg-black/20 border-white/10">
+					<Card.Header className="text-center mb-8">
+						<div className="w-20 h-20 mb-6 mx-auto flex items-center justify-center filter drop-shadow-lg">
+							<img src="/logo.svg" alt="Logo" className="w-full h-full" />
+						</div>
+						<Card.Title className="text-2xl font-bold text-white mb-1 tracking-tight">
+							Penguin Drive
+						</Card.Title>
+						<Card.Description className="text-sm text-white/60 font-medium">
+							Self-Hosted Secure Storage
+						</Card.Description>
+					</Card.Header>
 
-				<AnimatePresence mode="wait">
-					{floodWait ? (
-						<motion.div
-							key="flood"
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							className="text-center space-y-6"
-						>
-							<div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto animate-pulse">
-								<span className="text-2xl">⏳</span>
-							</div>
-							<div>
-								<h2 className="text-xl font-bold text-white mb-2">
-									Too Many Requests
-								</h2>
-								<p className="text-sm text-gray-400">
-									Telegram has temporarily limited your actions.
-								</p>
-								<p className="text-sm text-gray-400">
-									Please wait before trying again.
-								</p>
-							</div>
-
-							<div className="text-5xl font-mono items-center justify-center flex text-blue-400 font-bold">
-								{Math.floor(floodWait / 60)}:
-								{(floodWait % 60).toString().padStart(2, "0")}
-							</div>
-
-							<p className="text-xs text-red-400/60 mt-4">
-								Do not restart the app. The timer will reset if you do.
-							</p>
-						</motion.div>
-					) : (
-						<>
-							{step === "setup" && (
-								<motion.form
-									key="setup"
-									initial={{ x: 20, opacity: 0 }}
-									animate={{ x: 0, opacity: 1 }}
-									exit={{ x: -20, opacity: 0 }}
-									onSubmit={handleSetupSubmit}
-									className="space-y-5"
+					<Card.Content>
+						<AnimatePresence mode="wait">
+							{floodWait ? (
+								<motion.div
+									key="flood"
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									className="text-center space-y-6"
 								>
-									<div className="space-y-4">
-										<div>
-											<label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-												API ID
-											</label>
-											<div className="relative">
-												<Key className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/80" />
-												<input
-													type="text"
-													value={apiId}
-													onChange={(e) => setApiId(e.target.value)}
-													placeholder="12345678"
-													className="w-full glass-input rounded-xl pl-12 pr-4 py-3.5 text-white placeholder-gray-600 focus:outline-none transition-all font-mono text-sm"
-												/>
-											</div>
-										</div>
-										<div>
-											<label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-												API Hash
-											</label>
-											<div className="relative">
-												<Key className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/80" />
-												<input
-													type="text"
-													value={apiHash}
-													onChange={(e) => setApiHash(e.target.value)}
-													placeholder="abcdef123456..."
-													className="w-full glass-input rounded-xl pl-12 pr-4 py-3.5 text-white placeholder-gray-600 focus:outline-none transition-all font-mono text-sm"
-												/>
-											</div>
-										</div>
+									<div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto animate-pulse">
+										<span className="text-2xl">⏳</span>
+									</div>
+									<div>
+										<h2 className="text-xl font-bold text-white mb-2">
+											Too Many Requests
+										</h2>
+										<p className="text-sm text-gray-400">
+											Telegram has temporarily limited your actions.
+										</p>
+										<p className="text-sm text-gray-400">
+											Please wait before trying again.
+										</p>
 									</div>
 
-									<button
-										type="submit"
-										className="w-full glass-button text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg active:scale-[0.98] hover:glow-primary"
-									>
-										Configure <Settings className="w-4 h-4" />
-									</button>
-
-									<button
-										type="button"
-										onClick={() => setShowHelp(true)}
-										className="w-full text-xs text-blue-300 hover:text-telegram-primary transition-colors flex items-center justify-center gap-1.5 py-1"
-									>
-										<HelpCircle className="w-3 h-3" />
-										How do I get my API credentials?
-									</button>
-
-									{import.meta.env.DEV && (
-										<button
-											type="button"
-											onClick={() => onLogin()}
-											className="w-full text-xs text-red-400/60 hover:text-red-300 transition-colors py-1"
-										>
-											Dev Mode
-										</button>
-									)}
-								</motion.form>
-							)}
-
-							{step === "phone" && (
-								<motion.form
-									key="phone"
-									initial={{ x: 20, opacity: 0 }}
-									animate={{ x: 0, opacity: 1 }}
-									exit={{ x: -20, opacity: 0 }}
-									onSubmit={handlePhoneSubmit}
-									className="space-y-6"
-								>
-									<div className="space-y-2">
-										<label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider">
-											Phone Number
-										</label>
-										<div className="relative">
-											<Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/80" />
-											<input
-												type="tel"
-												value={phone}
-												onChange={(e) => setPhone(e.target.value)}
-												placeholder="+1 234 567 8900"
-												className="w-full glass-input rounded-xl pl-12 pr-4 py-4 text-white placeholder-gray-600 focus:outline-none transition-all text-lg tracking-wide"
-											/>
-										</div>
+									<div className="text-5xl font-mono items-center justify-center flex text-blue-400 font-bold">
+										{Math.floor(floodWait / 60)}:
+										{(floodWait % 60).toString().padStart(2, "0")}
 									</div>
 
-									<div className="flex flex-col gap-3">
-										<button
-											type="submit"
-											disabled={loading}
-											className="w-full glass-button text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed hover:glow-primary"
+									<p className="text-xs text-red-400/60 mt-4">
+										Do not restart the app. The timer will reset if you do.
+									</p>
+								</motion.div>
+							) : (
+								<>
+									{step === "setup" && (
+										<motion.form
+											key="setup"
+											initial={{ x: 20, opacity: 0 }}
+											animate={{ x: 0, opacity: 1 }}
+											exit={{ x: -20, opacity: 0 }}
+											onSubmit={handleSetupSubmit}
+											className="space-y-5"
 										>
-											{loading ? (
-												"Connecting..."
-											) : (
-												<>
-													Continue <ArrowRight className="w-5 h-5" />
-												</>
+											<div className="space-y-4">
+												<TextField name="apiId" type="text">
+													<Label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+														API ID
+													</Label>
+													<div className="relative">
+														<Key className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/80 z-10" />
+														<Input
+															value={apiId}
+															onChange={(e) => setApiId(e.target.value)}
+															placeholder="12345678"
+															className="w-full rounded-xl pl-12 pr-4 py-3.5 text-white placeholder-gray-600 bg-black/20 border-white/10 backdrop-blur-sm"
+														/>
+													</div>
+												</TextField>
+												<TextField name="apiHash" type="text">
+													<Label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+														API Hash
+													</Label>
+													<div className="relative">
+														<Key className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/80 z-10" />
+														<Input
+															value={apiHash}
+															onChange={(e) => setApiHash(e.target.value)}
+															placeholder="abcdef123456..."
+															className="w-full rounded-xl pl-12 pr-4 py-3.5 text-white placeholder-gray-600 bg-black/20 border-white/10 backdrop-blur-sm"
+														/>
+													</div>
+												</TextField>
+											</div>
+
+											<Button
+												type="submit"
+												variant="primary"
+												className="w-full py-4 rounded-xl flex items-center justify-center gap-2 shadow-lg active:scale-[0.98]"
+											>
+												Configure <Settings className="w-4 h-4" />
+											</Button>
+
+											<Button
+												type="button"
+												variant="ghost"
+												onClick={() => setShowHelp(true)}
+												className="w-full text-xs text-blue-300 hover:text-telegram-primary transition-colors flex items-center justify-center gap-1.5 py-1"
+											>
+												<HelpCircle className="w-3 h-3" />
+												How do I get my API credentials?
+											</Button>
+
+											{import.meta.env.DEV && (
+												<Button
+													type="button"
+													variant="ghost"
+													onClick={() => onLogin()}
+													className="w-full text-xs text-red-400/60 hover:text-red-300 transition-colors py-1"
+												>
+													Dev Mode
+												</Button>
 											)}
-										</button>
-										<button
-											type="button"
-											onClick={() => setStep("setup")}
-											className="text-xs text-gray-500 hover:text-white transition-colors py-2"
+										</motion.form>
+									)}
+
+									{step === "phone" && (
+										<motion.form
+											key="phone"
+											initial={{ x: 20, opacity: 0 }}
+											animate={{ x: 0, opacity: 1 }}
+											exit={{ x: -20, opacity: 0 }}
+											onSubmit={handlePhoneSubmit}
+											className="space-y-6"
 										>
-											Back to Configuration
-										</button>
-									</div>
-								</motion.form>
+											<TextField name="phone" type="tel">
+												<Label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider">
+													Phone Number
+												</Label>
+												<div className="relative">
+													<Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/80 z-10" />
+													<Input
+														value={phone}
+														onChange={(e) => setPhone(e.target.value)}
+														placeholder="+1 234 567 8900"
+														className="w-full rounded-xl pl-12 pr-4 py-4 text-white placeholder-gray-600 bg-black/20 border-white/10 backdrop-blur-sm text-lg tracking-wide"
+													/>
+												</div>
+											</TextField>
+
+											<div className="flex flex-col gap-3">
+												<Button
+													type="submit"
+													variant="primary"
+													isPending={loading}
+													className="w-full py-4 rounded-xl flex items-center justify-center gap-2 shadow-lg active:scale-[0.98]"
+												>
+													{({ isPending }) => (
+														<>
+															{isPending ? (
+																<Spinner color="current" size="sm" />
+															) : (
+																<ArrowRight className="w-5 h-5" />
+															)}
+															{isPending ? "Connecting..." : "Continue"}
+														</>
+													)}
+												</Button>
+												<Button
+													type="button"
+													variant="ghost"
+													onClick={() => setStep("setup")}
+													className="text-xs text-gray-500 hover:text-white transition-colors py-2"
+												>
+													Back to Configuration
+												</Button>
+											</div>
+										</motion.form>
+									)}
+
+									{step === "code" && (
+										<motion.form
+											key="code"
+											initial={{ x: 20, opacity: 0 }}
+											animate={{ x: 0, opacity: 1 }}
+											exit={{ x: -20, opacity: 0 }}
+											onSubmit={handleCodeSubmit}
+											className="space-y-6"
+										>
+											<TextField name="code" type="text">
+												<Label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider">
+													Telegram Code
+												</Label>
+												<div className="relative">
+													<Key className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/80 z-10" />
+													<Input
+														value={code}
+														onChange={(e) => setCode(e.target.value)}
+														placeholder="1 2 3 4 5"
+														className="w-full rounded-xl pl-12 pr-4 py-4 text-white placeholder-gray-600 bg-black/20 border-white/10 backdrop-blur-sm text-2xl tracking-[0.5em] font-mono text-center"
+													/>
+												</div>
+											</TextField>
+
+											<div className="flex flex-col gap-3">
+												<Button
+													type="submit"
+													variant="primary"
+													isPending={loading}
+													className="w-full py-4 rounded-xl flex items-center justify-center gap-2 shadow-lg active:scale-[0.98]"
+												>
+													{({ isPending }) => (
+														<>
+															{isPending && (
+																<Spinner color="current" size="sm" />
+															)}
+															{isPending ? "Verifying..." : "Sign In"}
+														</>
+													)}
+												</Button>
+												<Button
+													type="button"
+													variant="ghost"
+													onClick={() => setStep("phone")}
+													className="text-xs text-gray-500 hover:text-white transition-colors py-2"
+												>
+													Change Phone Number
+												</Button>
+											</div>
+										</motion.form>
+									)}
+
+									{step === "password" && (
+										<motion.form
+											key="password"
+											initial={{ x: 20, opacity: 0 }}
+											animate={{ x: 0, opacity: 1 }}
+											exit={{ x: -20, opacity: 0 }}
+											onSubmit={handlePasswordSubmit}
+											className="space-y-6"
+										>
+											<div className="space-y-2">
+												<Card className="p-3 mb-4 border border-blue-500/20 bg-blue-500/10">
+													<p className="text-xs text-blue-300 text-center">
+														Your account has Two-Factor Authentication enabled.
+														Please enter your cloud password to continue.
+													</p>
+												</Card>
+												<TextField name="password" type="password">
+													<Label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider">
+														Cloud Password
+													</Label>
+													<div className="relative">
+														<Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/80 z-10" />
+														<Input
+															value={password}
+															onChange={(e) => setPassword(e.target.value)}
+															placeholder="Enter your password"
+															className="w-full rounded-xl pl-12 pr-4 py-4 text-white placeholder-gray-600 bg-black/20 border-white/10 backdrop-blur-sm text-lg"
+														/>
+													</div>
+												</TextField>
+											</div>
+
+											<div className="flex flex-col gap-3">
+												<Button
+													type="submit"
+													variant="primary"
+													isPending={loading}
+													isDisabled={!password}
+													className="w-full py-4 rounded-xl flex items-center justify-center gap-2 shadow-lg active:scale-[0.98]"
+												>
+													{({ isPending }) => (
+														<>
+															{isPending && (
+																<Spinner color="current" size="sm" />
+															)}
+															{isPending ? "Verifying..." : "Unlock"}
+														</>
+													)}
+												</Button>
+												<Button
+													type="button"
+													variant="ghost"
+													onClick={() => {
+														setStep("code");
+														setPassword("");
+														setError(null);
+													}}
+													className="text-xs text-gray-500 hover:text-white transition-colors py-2"
+												>
+													Back to Code Entry
+												</Button>
+											</div>
+										</motion.form>
+									)}
+								</>
 							)}
+						</AnimatePresence>
 
-							{step === "code" && (
-								<motion.form
-									key="code"
-									initial={{ x: 20, opacity: 0 }}
-									animate={{ x: 0, opacity: 1 }}
-									exit={{ x: -20, opacity: 0 }}
-									onSubmit={handleCodeSubmit}
-									className="space-y-6"
-								>
-									<div className="space-y-2">
-										<label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider">
-											Telegram Code
-										</label>
-										<div className="relative">
-											<Key className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/80" />
-											<input
-												type="text"
-												value={code}
-												onChange={(e) => setCode(e.target.value)}
-												placeholder="1 2 3 4 5"
-												className="w-full glass-input rounded-xl pl-12 pr-4 py-4 text-white placeholder-gray-600 focus:outline-none transition-all text-2xl tracking-[0.5em] font-mono text-center"
-											/>
-										</div>
-									</div>
-
-									<div className="flex flex-col gap-3">
-										<button
-											type="submit"
-											disabled={loading}
-											className="w-full glass-button text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg active:scale-[0.98] hover:glow-primary"
-										>
-											{loading ? "Verifying..." : "Sign In"}
-										</button>
-										<button
-											type="button"
-											onClick={() => setStep("phone")}
-											className="text-xs text-gray-500 hover:text-white transition-colors py-2"
-										>
-											Change Phone Number
-										</button>
-									</div>
-								</motion.form>
-							)}
-
-							{step === "password" && (
-								<motion.form
-									key="password"
-									initial={{ x: 20, opacity: 0 }}
-									animate={{ x: 0, opacity: 1 }}
-									exit={{ x: -20, opacity: 0 }}
-									onSubmit={handlePasswordSubmit}
-									className="space-y-6"
-								>
-									<div className="space-y-2">
-										<div className="p-3 glass rounded-xl mb-4 border border-blue-500/20">
-											<p className="text-xs text-blue-300 text-center">
-												Your account has Two-Factor Authentication enabled.
-												Please enter your cloud password to continue.
-											</p>
-										</div>
-										<label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider">
-											Cloud Password
-										</label>
-										<div className="relative">
-											<Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/80" />
-											<input
-												type="password"
-												value={password}
-												onChange={(e) => setPassword(e.target.value)}
-												placeholder="Enter your password"
-												className="w-full glass-input rounded-xl pl-12 pr-4 py-4 text-white placeholder-gray-600 focus:outline-none transition-all text-lg"
-											/>
-										</div>
-									</div>
-
-									<div className="flex flex-col gap-3">
-										<button
-											type="submit"
-											disabled={loading || !password}
-											className="w-full glass-button text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed hover:glow-primary"
-										>
-											{loading ? "Verifying..." : "Unlock"}
-										</button>
-										<button
-											type="button"
-											onClick={() => {
-												setStep("code");
-												setPassword("");
-												setError(null);
-											}}
-											className="text-xs text-gray-500 hover:text-white transition-colors py-2"
-										>
-											Back to Code Entry
-										</button>
-									</div>
-								</motion.form>
-							)}
-						</>
-					)}
-				</AnimatePresence>
-
-				{error && (
-					<motion.div
-						initial={{ opacity: 0, y: 10 }}
-						animate={{ opacity: 1, y: 0 }}
-						className="mt-6 p-4 glass rounded-xl flex items-start gap-3 border border-red-500/20"
-					>
-						<div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-2 shrink-0" />
-						<p className="text-red-400 text-sm leading-snug">{error}</p>
-					</motion.div>
-				)}
+						{error && (
+							<motion.div
+								initial={{ opacity: 0, y: 10 }}
+								animate={{ opacity: 1, y: 0 }}
+								className="mt-6"
+							>
+								<Card className="p-4 flex items-start gap-3 border border-red-500/20 bg-red-500/10">
+									<div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-2 shrink-0" />
+									<p className="text-red-400 text-sm leading-snug">{error}</p>
+								</Card>
+							</motion.div>
+						)}
+					</Card.Content>
+				</Card>
 			</motion.div>
 
-			<AnimatePresence>
-				{showHelp && (
-					<motion.div
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 1 }}
-						exit={{ opacity: 0 }}
-						className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4"
-						onClick={() => setShowHelp(false)}
-					>
-						<motion.div
-							initial={{ scale: 0.95, opacity: 0 }}
-							animate={{ scale: 1, opacity: 1 }}
-							exit={{ scale: 0.95, opacity: 0 }}
-							className="glass-card p-6 max-w-lg w-full max-h-[80vh] overflow-y-auto shadow-2xl rounded-2xl"
-							onClick={(e) => e.stopPropagation()}
-						>
-							<div className="flex items-center justify-between mb-6">
-								<h2 className="text-xl font-bold text-telegram-text">
+			<Modal isOpen={showHelp} onOpenChange={setShowHelp}>
+				<Modal.Backdrop variant="blur">
+					<Modal.Container>
+						<Modal.Dialog>
+							<Modal.CloseTrigger />
+							<Modal.Header>
+								<Modal.Heading className="text-xl font-bold text-white">
 									Getting Started
-								</h2>
-								<button
-									type="button"
-									onClick={() => setShowHelp(false)}
-									className="p-2 glass rounded-lg transition-all hover:bg-white/10"
-								>
-									<X className="w-5 h-5 text-telegram-subtext" />
-								</button>
-							</div>
-
-							<div className="space-y-6 text-telegram-text">
-								<div className="p-4 glass rounded-xl border border-telegram-primary/20">
+								</Modal.Heading>
+							</Modal.Header>
+							<Modal.Body className="space-y-6 text-white">
+								<Card className="p-4 border border-telegram-primary/20 bg-telegram-primary/10">
 									<p className="text-sm text-telegram-subtext">
 										<strong className="text-telegram-primary">
 											Penguin Drive
@@ -534,7 +554,7 @@ export function AuthWizard({ onLogin }: { onLogin: () => void }) {
 										uses your Telegram account as secure cloud storage. You'll
 										need a Telegram account and API credentials to get started.
 									</p>
-								</div>
+								</Card>
 
 								<div className="space-y-4">
 									<h3 className="font-semibold flex items-center gap-2">
@@ -549,7 +569,7 @@ export function AuthWizard({ onLogin }: { onLogin: () => void }) {
 											href="https://my.telegram.org"
 											target="_blank"
 											rel="noreferrer"
-											className="text-telegram-primary underline hover:text-telegram-text"
+											className="text-telegram-primary underline hover:text-white"
 										>
 											my.telegram.org
 										</a>{" "}
@@ -585,28 +605,30 @@ export function AuthWizard({ onLogin }: { onLogin: () => void }) {
 									</p>
 								</div>
 
-								<div className="p-4 glass rounded-xl border border-telegram-border">
+								<Card className="p-4 border border-white/10 bg-white/5">
 									<p className="text-xs text-telegram-subtext">
 										<strong>🔒 Privacy:</strong> Your credentials are stored
 										locally on your device and are never sent to any third-party
 										servers. All data goes directly between you and Telegram.
 									</p>
-								</div>
-
-								<a
-									href="https://my.telegram.org"
-									target="_blank"
-									rel="noreferrer"
-									className="w-full glass-button text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 hover:glow-primary transition-all"
+								</Card>
+							</Modal.Body>
+							<Modal.Footer>
+								<Button
+									variant="primary"
+									className="w-full py-3 rounded-xl flex items-center justify-center gap-2"
+									onClick={() =>
+										window.open("https://my.telegram.org", "_blank")
+									}
 								>
 									<ExternalLink className="w-4 h-4" />
 									Open my.telegram.org
-								</a>
-							</div>
-						</motion.div>
-					</motion.div>
-				)}
-			</AnimatePresence>
+								</Button>
+							</Modal.Footer>
+						</Modal.Dialog>
+					</Modal.Container>
+				</Modal.Backdrop>
+			</Modal>
 		</div>
 	);
 }

@@ -13,6 +13,8 @@
 		"build:all": "./build-and-check.sh"
 	},
 	"dependencies": {
+		"@heroui/react": "^3.0.1",
+		"@heroui/styles": "^3.0.1",
 		"@react-three/fiber": "^9.5.0",
 		"@tanstack/react-query": "^5.90.17",
 		"@tanstack/react-virtual": "^3.13.18",

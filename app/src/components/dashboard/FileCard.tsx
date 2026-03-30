@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Folder, Eye, Trash2, Download } from "lucide-react";
 import { invoke } from "@tauri-apps/api/core";
+import { Button, Card, Spinner } from "@heroui/react";
 import type { TelegramFile } from "../../types";
 import { FileTypeIcon } from "../FileTypeIcon";
 
@@ -47,6 +48,10 @@ export function FileCard({
 
 	// Lazy load thumbnail for image files
 	useEffect(() => {
+		// Reset thumbnail when file or folder changes
+		setThumbnail(null);
+		setThumbnailLoading(false);
+
 		if (isFolder || !isImageFile(file.name)) return;
 
 		let cancelled = false;
@@ -74,8 +79,27 @@ export function FileCard({
 	}, [file.id, file.name, activeFolderId, isFolder]);
 
 	return (
-		<div
-			className="relative"
+		<motion.div
+			key={`${file.id}-${activeFolderId}`}
+			layout
+			draggable={!isFolder}
+			onDragStart={(e) => {
+				const dragEvent = e as unknown as React.DragEvent;
+				if (onDragStart) onDragStart(file.id);
+				dragEvent.dataTransfer.setData(
+					"application/x-telegram-file-id",
+					file.id.toString(),
+				);
+				dragEvent.dataTransfer.effectAllowed = "move";
+			}}
+			onDragEnd={() => {
+				if (onDragEnd) onDragEnd();
+			}}
+			whileHover={{ y: -4, scale: 1.02 }}
+			className={`group cursor-pointer rounded-xl overflow-hidden transition-all relative
+                ${isSelected ? "ring-2 ring-telegram-primary" : ""}
+                ${isDragOver ? "ring-2 ring-telegram-primary scale-105" : ""}`}
+			style={height ? { height: `${height}px` } : { aspectRatio: "4/3" }}
 			onContextMenu={onContextMenu}
 			onClick={onClick}
 			onDragOver={(e) => {
@@ -101,26 +125,8 @@ export function FileCard({
 				}
 			}}
 		>
-			<motion.div
-				layout
-				draggable={!isFolder}
-				onDragStart={(e) => {
-					const dragEvent = e as unknown as React.DragEvent;
-					if (onDragStart) onDragStart(file.id);
-					dragEvent.dataTransfer.setData(
-						"application/x-telegram-file-id",
-						file.id.toString(),
-					);
-					dragEvent.dataTransfer.effectAllowed = "move";
-				}}
-				onDragEnd={() => {
-					if (onDragEnd) onDragEnd();
-				}}
-				whileHover={{ y: -4, scale: 1.02 }}
-				className={`group cursor-pointer glass-card rounded-xl overflow-hidden transition-all relative
-                ${isSelected ? "border-telegram-primary bg-telegram-primary/10 ring-2 ring-telegram-primary/50 glow-primary" : "hover:border-telegram-primary/30"}
-                ${isDragOver ? "ring-2 ring-telegram-primary bg-telegram-primary/20 scale-105 glow-primary" : ""}`}
-				style={height ? { height: `${height}px` } : { aspectRatio: "4/3" }}
+			<Card
+				className={`h-full backdrop-blur-md bg-black/20 border-white/10 ${isSelected ? "border-telegram-primary bg-telegram-primary/10" : ""} ${isDragOver ? "border-telegram-primary bg-telegram-primary/20" : ""}`}
 			>
 				{/* Thumbnail or Icon */}
 				{thumbnail ? (
@@ -134,7 +140,7 @@ export function FileCard({
 						<div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
 					</div>
 				) : (
-					<div className="absolute inset-0 flex flex-col items-center justify-center p-4">
+					<Card.Content className="absolute inset-0 flex flex-col items-center justify-center p-4">
 						{isFolder ? (
 							<div className="flex flex-col items-center justify-center w-full h-full">
 								<div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-telegram-primary/20 to-telegram-secondary/20 flex items-center justify-center backdrop-blur-sm border border-telegram-primary/30">
@@ -142,7 +148,7 @@ export function FileCard({
 								</div>
 							</div>
 						) : thumbnailLoading && isImageFile(file.name) ? (
-							<div className="w-8 h-8 border-2 border-telegram-primary/30 border-t-telegram-primary rounded-full animate-spin" />
+							<Spinner color="accent" size="md" />
 						) : (
 							<div className="flex flex-col items-center justify-center w-full h-full">
 								<div
@@ -231,7 +237,7 @@ export function FileCard({
 								</div>
 							</div>
 						)}
-					</div>
+					</Card.Content>
 				)}
 
 				{/* Selection Checkmark */}
@@ -257,41 +263,44 @@ export function FileCard({
 
 				{/* Quick actions on hover */}
 				<div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-all flex gap-1 z-10">
-					<button
-						type="button"
+					<Button
+						variant="ghost"
+						isIconOnly
+						size="sm"
 						onClick={(e) => {
 							e.stopPropagation();
 							if (onPreview) onPreview();
 						}}
-						className="p-1.5 glass rounded-full hover:bg-telegram-primary/30 hover:text-telegram-primary text-white/80 transition-all hover:scale-110"
-						title="Preview"
+						className="p-1.5 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 hover:bg-telegram-primary/30 hover:text-telegram-primary hover:border-telegram-primary/50 text-white/90 min-w-0 w-7 h-7 shadow-lg"
 					>
 						<Eye className="w-3.5 h-3.5" />
-					</button>
-					<button
-						type="button"
+					</Button>
+					<Button
+						variant="ghost"
+						isIconOnly
+						size="sm"
 						onClick={(e) => {
 							e.stopPropagation();
 							onDownload();
 						}}
-						className="p-1.5 glass rounded-full hover:bg-green-500/30 hover:text-green-400 text-white/80 transition-all hover:scale-110"
-						title="Download"
+						className="p-1.5 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 hover:bg-green-500/30 hover:text-green-400 hover:border-green-500/50 text-white/90 min-w-0 w-7 h-7 shadow-lg"
 					>
 						<Download className="w-3.5 h-3.5" />
-					</button>
-					<button
-						type="button"
+					</Button>
+					<Button
+						variant="ghost"
+						isIconOnly
+						size="sm"
 						onClick={(e) => {
 							e.stopPropagation();
 							onDelete();
 						}}
-						className="p-1.5 glass rounded-full hover:bg-red-500/30 hover:text-red-400 text-white/80 transition-all hover:scale-110"
-						title="Delete"
+						className="p-1.5 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 hover:bg-red-500/30 hover:text-red-400 hover:border-red-500/50 text-white/90 min-w-0 w-7 h-7 shadow-lg"
 					>
 						<Trash2 className="w-3.5 h-3.5" />
-					</button>
+					</Button>
 				</div>
-			</motion.div>
-		</div>
+			</Card>
+		</motion.div>
 	);
 }

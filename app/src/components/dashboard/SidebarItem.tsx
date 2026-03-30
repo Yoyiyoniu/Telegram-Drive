@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
+import { Button } from "@heroui/react";
 
 interface SidebarItemProps {
 	icon: React.ComponentType<{ className?: string }>;
@@ -28,8 +29,8 @@ export function SidebarItem({
 	const [isOver, setIsOver] = useState(false);
 
 	return (
-		<button
-			type="button"
+		<Button
+			variant={active ? "primary" : "ghost"}
 			onClick={onClick}
 			onDragEnter={(e) => {
 				e.preventDefault();
@@ -69,27 +70,28 @@ export function SidebarItem({
 					onDelete();
 				}
 			}}
-			className={`group w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
-				active
-					? "glass-card text-telegram-primary glow-primary"
-					: isOver
-						? "glass-card text-telegram-text ring-2 ring-telegram-primary scale-[1.02] glow-primary"
-						: "text-telegram-subtext hover:bg-telegram-hover hover:text-telegram-text backdrop-blur-sm"
+			className={`group w-full flex items-center gap-3 px-3 py-2 text-sm font-medium transition-all duration-150 ${
+				isOver
+					? "ring-2 ring-telegram-primary scale-[1.02] bg-telegram-primary/10"
+					: ""
 			}`}
 		>
 			<Icon className={`w-4 h-4 ${isOver ? "text-telegram-primary" : ""}`} />
 			<span className="flex-1 text-left truncate">{label}</span>
 			{onDelete && (
-				<div
+				<Button
+					variant="ghost"
+					isIconOnly
+					size="sm"
 					onClick={(e) => {
 						e.stopPropagation();
 						onDelete();
 					}}
-					className="opacity-0 group-hover:opacity-100 p-1 hover:text-red-400"
+					className="opacity-0 group-hover:opacity-100 p-1 hover:text-red-400 min-w-0 w-6 h-6"
 				>
 					<Plus className="w-3 h-3 rotate-45" />
-				</div>
+				</Button>
 			)}
-		</button>
+		</Button>
 	);
 }
