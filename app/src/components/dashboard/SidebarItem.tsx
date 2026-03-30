@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
-import { Button } from "@heroui/react";
 
 interface SidebarItemProps {
 	icon: React.ComponentType<{ className?: string }>;
@@ -29,20 +28,20 @@ export function SidebarItem({
 	const [isOver, setIsOver] = useState(false);
 
 	return (
-		<Button
-			variant={active ? "primary" : "ghost"}
+		<button
+			type="button"
 			onClick={onClick}
-			onDragEnter={(e) => {
+			onDragEnter={(e: React.DragEvent) => {
 				e.preventDefault();
 				e.stopPropagation();
 				setIsOver(true);
 			}}
-			onDragOver={(e) => {
+			onDragOver={(e: React.DragEvent) => {
 				e.preventDefault();
 				e.stopPropagation();
 				e.dataTransfer.dropEffect = "move";
 			}}
-			onDragLeave={(e) => {
+			onDragLeave={(e: React.DragEvent) => {
 				e.preventDefault();
 				e.stopPropagation();
 				// Only clear if truly leaving (not entering a child element)
@@ -58,19 +57,23 @@ export function SidebarItem({
 					setIsOver(false);
 				}
 			}}
-			onDrop={(e) => {
+			onDrop={(e: React.DragEvent) => {
 				e.preventDefault();
 				e.stopPropagation();
 				setIsOver(false);
 				if (onDrop) onDrop(e);
 			}}
-			onContextMenu={(e) => {
+			onContextMenu={(e: React.MouseEvent) => {
 				if (onDelete) {
 					e.preventDefault();
 					onDelete();
 				}
 			}}
-			className={`group w-full flex items-center gap-3 px-3 py-2 text-sm font-medium transition-all duration-150 ${
+			className={`group w-full flex items-center gap-3 px-3 py-2 text-sm font-medium cursor-pointer rounded-lg transition-all ${
+				active
+					? "bg-telegram-primary text-white"
+					: "text-telegram-subtext hover:bg-white/5 hover:text-telegram-text"
+			} ${
 				isOver
 					? "ring-2 ring-telegram-primary scale-[1.02] bg-telegram-primary/10"
 					: ""
@@ -79,19 +82,17 @@ export function SidebarItem({
 			<Icon className={`w-4 h-4 ${isOver ? "text-telegram-primary" : ""}`} />
 			<span className="flex-1 text-left truncate">{label}</span>
 			{onDelete && (
-				<Button
-					variant="ghost"
-					isIconOnly
-					size="sm"
+				<button
+					type="button"
 					onClick={(e) => {
 						e.stopPropagation();
 						onDelete();
 					}}
-					className="opacity-0 group-hover:opacity-100 p-1 hover:text-red-400 min-w-0 w-6 h-6"
+					className="opacity-0 group-hover:opacity-100 p-1 hover:text-red-400 rounded transition-all w-6 h-6 flex items-center justify-center"
 				>
 					<Plus className="w-3 h-3 rotate-45" />
-				</Button>
+				</button>
 			)}
-		</Button>
+		</button>
 	);
 }

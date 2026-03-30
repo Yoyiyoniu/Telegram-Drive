@@ -1,4 +1,4 @@
-import { Plus, HardDrive, Folder } from "lucide-react";
+import { HardDrive, Folder } from "lucide-react";
 import { Modal, Button } from "@heroui/react";
 import type { TelegramFolder } from "../../types";
 

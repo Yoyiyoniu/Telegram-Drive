@@ -10,7 +10,6 @@ import {
 	ShieldCheck,
 	HelpCircle,
 	ExternalLink,
-	X,
 } from "lucide-react";
 import { load } from "@tauri-apps/plugin-store";
 import {
@@ -26,31 +25,6 @@ import {
 type Step = "setup" | "phone" | "code" | "password";
 
 export function AuthWizard({ onLogin }: { onLogin: () => void }) {
-	const isBrowser =
-		typeof window !== "undefined" && !("__TAURI_INTERNALS__" in window);
-
-	if (isBrowser) {
-		return (
-			<div className="flex flex-col items-center justify-center h-full max-w-lg mx-auto p-8 text-center">
-				<div className="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mb-6">
-					<ShieldCheck className="w-10 h-10 text-red-500" />
-				</div>
-				<h1 className="text-2xl font-bold text-white mb-4">
-					Desktop App Required
-				</h1>
-				<p className="text-gray-400 mb-6 leading-relaxed">
-					You are viewing the internal development server in a browser. This
-					application cannot function here because it requires access to the
-					system backend (Rust).
-				</p>
-				<Card className="p-4 text-sm text-gray-300">
-					Please open the <strong>Penguin Drive</strong> window in your OS
-					taskbar/dock to continue.
-				</Card>
-			</div>
-		);
-	}
-
 	const [step, setStep] = useState<Step>("setup");
 	const [loading, setLoading] = useState(false);
 
@@ -63,6 +37,9 @@ export function AuthWizard({ onLogin }: { onLogin: () => void }) {
 	const [error, setError] = useState<string | null>(null);
 	const [floodWait, setFloodWait] = useState<number | null>(null);
 	const [showHelp, setShowHelp] = useState(false);
+
+	const isBrowser =
+		typeof window !== "undefined" && !("__TAURI_INTERNALS__" in window);
 
 	useEffect(() => {
 		if (!floodWait) return;
@@ -93,6 +70,28 @@ export function AuthWizard({ onLogin }: { onLogin: () => void }) {
 		initStore();
 	}, []);
 
+	if (isBrowser) {
+		return (
+			<div className="flex flex-col items-center justify-center h-full max-w-lg mx-auto p-8 text-center">
+				<div className="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mb-6">
+					<ShieldCheck className="w-10 h-10 text-red-500" />
+				</div>
+				<h1 className="text-2xl font-bold text-white mb-4">
+					Desktop App Required
+				</h1>
+				<p className="text-gray-400 mb-6 leading-relaxed">
+					You are viewing the internal development server in a browser. This
+					application cannot function here because it requires access to the
+					system backend (Rust).
+				</p>
+				<Card className="p-4 text-sm text-gray-300">
+					Please open the <strong>Penguin Drive</strong> window in your OS
+					taskbar/dock to continue.
+				</Card>
+			</div>
+		);
+	}
+
 	const saveCredentials = async () => {
 		try {
 			const store = await load("config.json");
@@ -121,7 +120,7 @@ export function AuthWizard({ onLogin }: { onLogin: () => void }) {
 		setError(null);
 		try {
 			const idInt = parseInt(apiId, 10);
-			if (isNaN(idInt)) throw new Error("API ID must be a number");
+			if (Number.isNaN(idInt)) throw new Error("API ID must be a number");
 
 			await invoke("cmd_auth_request_code", {
 				phone,
@@ -135,7 +134,7 @@ export function AuthWizard({ onLogin }: { onLogin: () => void }) {
 				const parts = msg.split("FLOOD_WAIT_");
 				if (parts[1]) {
 					const seconds = parseInt(parts[1]);
-					if (!isNaN(seconds)) {
+					if (!Number.isNaN(seconds)) {
 						setFloodWait(seconds);
 						return;
 					}
