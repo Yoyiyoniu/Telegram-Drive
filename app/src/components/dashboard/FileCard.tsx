@@ -133,13 +133,102 @@ export function FileCard({
 						<div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
 					</div>
 				) : (
-					<div className="absolute inset-0 flex items-center justify-center p-4">
+					<div className="absolute inset-0 flex flex-col items-center justify-center p-4">
 						{isFolder ? (
-							<Folder className="w-12 h-12 text-telegram-primary drop-shadow-lg" />
+							<div className="flex flex-col items-center justify-center w-full h-full">
+								<div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-telegram-primary/20 to-telegram-secondary/20 flex items-center justify-center backdrop-blur-sm border border-telegram-primary/30">
+									<Folder className="w-10 h-10 text-telegram-primary drop-shadow-lg" />
+								</div>
+							</div>
 						) : thumbnailLoading && isImageFile(file.name) ? (
 							<div className="w-8 h-8 border-2 border-telegram-primary/30 border-t-telegram-primary rounded-full animate-spin" />
 						) : (
-							<FileTypeIcon filename={file.name} size="lg" />
+							<div className="flex flex-col items-center justify-center w-full h-full">
+								<div
+									className={`w-20 h-20 rounded-2xl flex items-center justify-center backdrop-blur-sm border ${(() => {
+										const ext = file.name.split(".").pop()?.toLowerCase() || "";
+										// Images
+										if (
+											[
+												"jpg",
+												"jpeg",
+												"png",
+												"gif",
+												"webp",
+												"svg",
+												"bmp",
+												"heic",
+											].includes(ext)
+										)
+											return "bg-gradient-to-br from-pink-500/20 to-pink-600/20 border-pink-500/30";
+										// Videos
+										if (["mp4", "mov", "avi", "mkv", "webm"].includes(ext))
+											return "bg-gradient-to-br from-purple-500/20 to-purple-600/20 border-purple-500/30";
+										// Audio
+										if (
+											[
+												"mp3",
+												"wav",
+												"flac",
+												"aac",
+												"ogg",
+												"m4a",
+												"opus",
+											].includes(ext)
+										)
+											return "bg-gradient-to-br from-green-500/20 to-green-600/20 border-green-500/30";
+										// Documents
+										if (
+											["pdf", "doc", "docx", "txt", "rtf", "md"].includes(ext)
+										)
+											return "bg-gradient-to-br from-blue-500/20 to-blue-600/20 border-blue-500/30";
+										// Spreadsheets
+										if (["xls", "xlsx", "csv"].includes(ext))
+											return "bg-gradient-to-br from-emerald-500/20 to-emerald-600/20 border-emerald-500/30";
+										// Presentations
+										if (["ppt", "pptx", "key"].includes(ext))
+											return "bg-gradient-to-br from-orange-500/20 to-orange-600/20 border-orange-500/30";
+										// Archives
+										if (["zip", "rar", "7z", "tar", "gz"].includes(ext))
+											return "bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 border-yellow-500/30";
+										// Code
+										if (
+											[
+												"js",
+												"ts",
+												"jsx",
+												"tsx",
+												"py",
+												"rs",
+												"go",
+												"java",
+												"html",
+												"css",
+												"json",
+											].includes(ext)
+										)
+											return "bg-gradient-to-br from-cyan-500/20 to-cyan-600/20 border-cyan-500/30";
+										// 3D Models
+										if (
+											[
+												"stl",
+												"3mf",
+												"obj",
+												"gltf",
+												"glb",
+												"fbx",
+												"dae",
+												"ply",
+											].includes(ext)
+										)
+											return "bg-gradient-to-br from-teal-500/20 to-teal-600/20 border-teal-500/30";
+										// Default
+										return "bg-gradient-to-br from-gray-500/20 to-gray-600/20 border-gray-500/30";
+									})()}`}
+								>
+									<FileTypeIcon filename={file.name} size="lg" />
+								</div>
+							</div>
 						)}
 					</div>
 				)}

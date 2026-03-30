@@ -156,7 +156,7 @@ export function MediaPlayer({
 				<div className="mt-4 text-center">
 					<h3 className="text-lg font-medium text-white">{file.name}</h3>
 					<p className="text-sm text-white/50">
-						Streaming from Telegram Drive
+						Streaming from Penguin Drive
 						{typeof currentIndex === "number" &&
 							typeof totalItems === "number" &&
 							totalItems > 0 && (

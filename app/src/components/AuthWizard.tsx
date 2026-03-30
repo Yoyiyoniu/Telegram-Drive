@@ -35,7 +35,7 @@ export function AuthWizard({ onLogin }: { onLogin: () => void }) {
 					system backend (Rust).
 				</p>
 				<div className="p-4 glass rounded-xl text-sm text-gray-300">
-					Please open the <strong>Telegram Drive</strong> window in your OS
+					Please open the <strong>Penguin Drive</strong> window in your OS
 					taskbar/dock to continue.
 				</div>
 			</div>
@@ -183,32 +183,46 @@ export function AuthWizard({ onLogin }: { onLogin: () => void }) {
 	};
 
 	return (
-		<div className="h-full w-full auth-gradient flex items-center justify-center p-6 relative overflow-hidden">
+		<div className="h-full w-full bg-telegram-bg flex items-center justify-center p-6 relative overflow-hidden">
+			{/* Circuit Board Pattern Background */}
+			<div
+				className="absolute inset-0 z-0 pointer-events-none circuit-pattern"
+				style={{
+					backgroundImage: `
+                        repeating-linear-gradient(0deg, transparent, transparent 19px, rgba(255, 174, 0, 0.08) 19px, rgba(255, 174, 0, 0.08) 20px, transparent 20px, transparent 39px, rgba(255, 174, 0, 0.08) 39px, rgba(255, 174, 0, 0.08) 40px),
+                        repeating-linear-gradient(90deg, transparent, transparent 19px, rgba(255, 174, 0, 0.08) 19px, rgba(255, 174, 0, 0.08) 20px, transparent 20px, transparent 39px, rgba(255, 174, 0, 0.08) 39px, rgba(255, 174, 0, 0.08) 40px),
+                        radial-gradient(circle at 20px 20px, rgba(36, 129, 204, 0.12) 2px, transparent 2px),
+                        radial-gradient(circle at 40px 40px, rgba(36, 129, 204, 0.12) 2px, transparent 2px)
+                    `,
+					backgroundSize: "40px 40px, 40px 40px, 40px 40px, 40px 40px",
+				}}
+			/>
+
 			{/* Animated gradient orbs */}
 			<div
-				className="fixed top-[-20%] left-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none animate-pulse"
+				className="fixed top-[-20%] left-[-10%] w-[500px] h-[500px] bg-telegram-primary/10 rounded-full blur-[120px] pointer-events-none animate-pulse"
 				style={{ animationDuration: "8s" }}
 			/>
 			<div
-				className="fixed bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-purple-600/15 rounded-full blur-[100px] pointer-events-none animate-pulse"
+				className="fixed bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-telegram-secondary/10 rounded-full blur-[100px] pointer-events-none animate-pulse"
 				style={{ animationDuration: "10s" }}
 			/>
 			<div
-				className="fixed top-[40%] right-[20%] w-[300px] h-[300px] bg-telegram-primary/10 rounded-full blur-[80px] pointer-events-none animate-pulse"
+				className="fixed top-[40%] right-[20%] w-[300px] h-[300px] bg-telegram-primary/8 rounded-full blur-[80px] pointer-events-none animate-pulse"
 				style={{ animationDuration: "12s" }}
 			/>
 
 			<motion.div
 				initial={{ opacity: 0, scale: 0.95, y: 20 }}
 				animate={{ opacity: 1, scale: 1, y: 0 }}
-				className="auth-glass p-8 rounded-3xl shadow-2xl w-full max-w-md relative glass-shimmer"
+				className="glass-card p-8 rounded-3xl shadow-2xl w-full max-w-md relative z-10"
 			>
 				<div className="text-center mb-8">
 					<div className="w-20 h-20 mb-6 mx-auto flex items-center justify-center filter drop-shadow-lg">
 						<img src="/logo.svg" alt="Logo" className="w-full h-full" />
 					</div>
 					<h1 className="text-2xl font-bold text-white mb-1 tracking-tight">
-						Telegram Drive
+						Penguin Drive
 					</h1>
 					<p className="text-sm text-white/60 font-medium">
 						Self-Hosted Secure Storage
@@ -515,7 +529,7 @@ export function AuthWizard({ onLogin }: { onLogin: () => void }) {
 								<div className="p-4 glass rounded-xl border border-telegram-primary/20">
 									<p className="text-sm text-telegram-subtext">
 										<strong className="text-telegram-primary">
-											Telegram Drive
+											Penguin Drive
 										</strong>{" "}
 										uses your Telegram account as secure cloud storage. You'll
 										need a Telegram account and API credentials to get started.
